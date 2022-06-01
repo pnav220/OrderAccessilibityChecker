@@ -34,12 +34,13 @@ public class ExcelToText {
 			XSSFSheet sheet = excel.getSheetAt(1);
 			BufferedWriter writer = new BufferedWriter(new FileWriter("output.txt"));
 			Iterator<Row> rowItr = sheet.iterator();
+			int check = findIndex(sheet);
 			while(rowItr.hasNext()) {
 				Row row = rowItr.next();
 				Iterator<Cell> cellItr = row.cellIterator();
 				while(cellItr.hasNext()) {
 				Cell cell = cellItr.next();
-				if(cell.getColumnIndex() == 4) {
+				if(cell.getColumnIndex() == check) {
 				switch(cell.getCellTypeEnum()) {
 				case STRING:
 					writer.write(cell.getStringCellValue()+"\n");
@@ -103,7 +104,7 @@ public class ExcelToText {
 			XSSFSheet sheet = excel.getSheetAt(0);
 			int rowIndex = 3;
 			while((line = reader3.readLine())!=null) {
-				if(line.equalsIgnoreCase("SI Code")) {
+				if(line.equalsIgnoreCase("SI Code")==true) {
 					//nothing happens
 				}
 				else {
@@ -118,30 +119,20 @@ public class ExcelToText {
 			excel.write(output);
 			excel.close();
 			output.close();
-			Runtime.getRuntime().exec("/Users/pnav/Library/CloudStorage/OneDrive-Nokia/myVBS.vbs");
-			/*Iterator<Row> rowItr = sheet.iterator();
-			while(rowItr.hasNext()) {
-				Row row = rowItr.next();
-				Iterator<Cell> cellItr = row.cellIterator();
-				while(cellItr.hasNext()) {
-				Cell cell = cellItr.next();
-				if(cell.getColumnIndex() == 0) {
-				switch(cell.getCellTypeEnum()) {
-				case STRING:
-					writer.write(cell.getStringCellValue()+"\n");
-					break;
-				case NUMERIC:
-					writer.write(cell.getNumericCellValue()+"\n");
-					break;
-				default:
-					writer.write("");
-				}
-			}
-			}
-		}*/
+			Runtime.getRuntime().exec("wscript \\Users\\praprade\\Desktop\\OrderChecker\\myVBS.vbs");
 		}
 		catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	public static int findIndex(XSSFSheet sheet) {
+		for(Row row : sheet) {
+			for(Cell cell : row) {
+				if(cell.getRichStringCellValue().getString().trim().equalsIgnoreCase("SI Code")) {
+					return cell.getColumnIndex();
+				}
+			}
+		}
+		return 0;
 	}
 }
